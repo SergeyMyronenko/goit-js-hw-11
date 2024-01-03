@@ -48,7 +48,8 @@ function searchImg(params) {
           );
         }, '');
         gallery.innerHTML = renderImg;
-        new SimpleLightbox('.gallery a', {
+
+        let lightbox = new SimpleLightbox('.gallery a', {
           nav: true,
           captionDelay: 250,
           captionsData: 'alt',
@@ -56,6 +57,7 @@ function searchImg(params) {
           enableKeyboard: true,
           docClose: true,
         });
+        lightbox.refresh();
       } else {
         gallery.style.display = 'none';
         iziToast.error({
