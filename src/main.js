@@ -9,7 +9,7 @@ const galleryBox = document.querySelector('.gallery-box');
 const loader = document.querySelector('.loader');
 const input = document.querySelector('input');
 
-let paramsInfo = {
+let searchParamsDefaults = {
   key: '37773269-50f55f614e71cb99e92638715',
   q: 'black',
   image_type: 'photo',
@@ -25,7 +25,7 @@ function searchImg(params) {
       loader.style.display = 'none';
       gallery.style.display = 'flex';
       if (!response.ok) {
-        throw new Error(error.status);
+        throw new Error(error.message);
       }
       return response.json();
     })
@@ -47,6 +47,7 @@ function searchImg(params) {
       </li>`
           );
         }, '');
+
         gallery.innerHTML = renderImg;
 
         let lightbox = new SimpleLightbox('.gallery a', {
@@ -72,13 +73,10 @@ function searchImg(params) {
     });
 }
 
-form.addEventListener('click', event => {
+form.addEventListener('submit', event => {
   event.preventDefault();
-
-  if (event.target.type === 'submit') {
-    paramsInfo.q = input.value;
-    const searchParams = new URLSearchParams(paramsInfo);
-    searchImg(searchParams);
-  }
-  form.reset();
+  searchParamsDefaults.q = event.target.elements.search.value.trim();
+  const searchParams = new URLSearchParams(searchParamsDefaults);
+  searchImg(searchParams);
+  event.currentTarget.reset();
 });
