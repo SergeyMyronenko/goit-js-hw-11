@@ -9,7 +9,7 @@ const galleryBox = document.querySelector('.gallery-box');
 const loader = document.querySelector('.loader');
 const input = document.querySelector('input');
 
-let searchParamsDefaults = {
+const searchParamsDefaults = {
   key: '37773269-50f55f614e71cb99e92638715',
   q: 'black',
   image_type: 'photo',
@@ -17,15 +17,20 @@ let searchParamsDefaults = {
   safesearch: true,
 };
 
+const lightbox = new SimpleLightbox('.gallery a', {
+  nav: true,
+  captionDelay: 250,
+  captionsData: 'alt',
+  close: true,
+  enableKeyboard: true,
+  docClose: true,
+});
+
 function searchImg(params) {
-  loader.style.display = 'block';
-  gallery.style.display = 'none';
-  fetch(`https://pixabay.com/api/?${params}`)
+  return fetch(`https://pixabay.com/api/?${params}`)
     .then(response => {
-      loader.style.display = 'none';
-      gallery.style.display = 'flex';
       if (!response.ok) {
-        throw new Error(error.message);
+        throw new Error(response.statusText);
       }
       return response.json();
     })
@@ -50,17 +55,8 @@ function searchImg(params) {
 
         gallery.innerHTML = renderImg;
 
-        let lightbox = new SimpleLightbox('.gallery a', {
-          nav: true,
-          captionDelay: 250,
-          captionsData: 'alt',
-          close: true,
-          enableKeyboard: true,
-          docClose: true,
-        });
         lightbox.refresh();
       } else {
-        gallery.style.display = 'none';
         iziToast.error({
           position: 'topRight',
           message:
@@ -69,12 +65,17 @@ function searchImg(params) {
       }
     })
     .catch(error => {
-      console.log(error);
+      console.log(error.message);
+    })
+    .finally(() => {
+      loader.style.display = 'none';
     });
 }
 
 form.addEventListener('submit', event => {
   event.preventDefault();
+  gallery.innerHTML = '';
+  loader.style.display = 'block';
   searchParamsDefaults.q = event.target.elements.search.value.trim();
   const searchParams = new URLSearchParams(searchParamsDefaults);
   searchImg(searchParams);
